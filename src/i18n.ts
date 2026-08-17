@@ -1,14 +1,118 @@
-import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
 const resources = {
-  en: { translation: {
-    app: 'Weatherly', tagline: 'Clear weather for better plans.', login: 'Log in', register: 'Create account', logout: 'Log out', email: 'Email', password: 'Password', firstName: 'First name', lastName: 'Last name', phone: 'Phone', welcome: 'Welcome back', loginHint: 'Sign in to check weather and plan your best time outdoors.', registerHint: 'Create an account to start planning around the weather.', accountCreated: 'Account created. You can now log in.', city: 'City', country: 'Country', countryPlaceholder: 'Select a country', weather: 'Weather search', weatherHint: 'Check current conditions for a city.', searchWeather: 'Search weather', analysis: 'Activity analysis', analysisHint: 'Find the best weather windows for your activity.', analyze: 'Analyze hours', date: 'Date', period: 'Time period', optional: 'Optional', allPeriods: 'All periods', morning: 'Morning', evening: 'Afternoon', night: 'Night', dawn: 'Dawn', currentWeather: 'Current weather', feelsLike: 'Feels like', humidity: 'Humidity', wind: 'Wind', rain: 'Rain', goodHours: 'Good hours', currentHour: 'Current hour', score: 'Score', noHours: 'No hours were found for this selection.', loading: 'Loading…', requestError: 'We could not complete your request. Please try again.', language: 'Language', title: 'Plan around the weather', subtitle: 'Use current conditions and hourly scores to make better outdoor plans.'
-  } },
-  pt: { translation: {
-    app: 'Weatherly', tagline: 'Clima claro para planos melhores.', login: 'Entrar', register: 'Criar conta', logout: 'Sair', email: 'E-mail', password: 'Senha', firstName: 'Nome', lastName: 'Sobrenome', phone: 'Telefone', welcome: 'Bem-vindo de volta', loginHint: 'Entre para consultar o clima e planejar seus horários ao ar livre.', registerHint: 'Crie sua conta para começar a planejar de acordo com o clima.', accountCreated: 'Conta criada. Agora você pode entrar.', city: 'Cidade', country: 'País', countryPlaceholder: 'Selecione um país', weather: 'Consulta meteorológica', weatherHint: 'Confira as condições atuais de uma cidade.', searchWeather: 'Consultar clima', analysis: 'Análise de atividade', analysisHint: 'Encontre as melhores janelas de clima para sua atividade.', analyze: 'Analisar horários', date: 'Data', period: 'Período', optional: 'Opcional', allPeriods: 'Todos os períodos', morning: 'Manhã', evening: 'Tarde', night: 'Noite', dawn: 'Madrugada', currentWeather: 'Clima atual', feelsLike: 'Sensação térmica', humidity: 'Umidade', wind: 'Vento', rain: 'Chuva', goodHours: 'Bons horários', currentHour: 'Horário atual', score: 'Nota', noHours: 'Nenhum horário encontrado para esta seleção.', loading: 'Carregando…', requestError: 'Não foi possível concluir sua solicitação. Tente novamente.', language: 'Idioma', title: 'Planeje de acordo com o clima', subtitle: 'Use as condições atuais e as notas por hora para fazer melhores planos ao ar livre.'
-  } },
-}
+  en: {
+    translation: {
+      app: "Weatherly",
+      tagline: "Clear weather for better plans.",
+      login: "Log in",
+      register: "Create account",
+      logout: "Log out",
+      email: "Email",
+      password: "Password",
+      firstName: "First name",
+      lastName: "Last name",
+      phone: "Phone",
+      welcome: "Welcome back",
+      loginHint: "Sign in to check weather and plan your best time outdoors.",
+      registerHint: "Create an account to start planning around the weather.",
+      accountCreated: "Account created. You can now log in.",
+      city: "City",
+      country: "Country",
+      countryPlaceholder: "Select a country",
+      weather: "Weather search",
+      weatherHint: "Check current conditions for a city.",
+      searchWeather: "Search weather",
+      analysis: "Activity analysis",
+      analysisHint: "Find the best weather windows for your activity.",
+      analyze: "Analyze hours",
+      date: "Date",
+      period: "Time period",
+      optional: "Optional",
+      allPeriods: "All periods",
+      morning: "Morning",
+      evening: "Afternoon",
+      night: "Night",
+      dawn: "Dawn",
+      currentWeather: "Current weather",
+      feelsLike: "Feels like",
+      humidity: "Humidity",
+      wind: "Wind",
+      rain: "Rain",
+      goodHours: "Good hours",
+      currentHour: "Current hour",
+      score: "Score",
+      noHours: "No hours were found for this selection.",
+      loading: "Loading…",
+      requestError: "We could not complete your request. Please try again.",
+      language: "Language",
+      title: "Plan around the weather",
+      subtitle:
+        "Use current conditions and hourly scores to make better outdoor plans.",
+    },
+  },
+  pt: {
+    translation: {
+      app: "Weatherly",
+      tagline: "Clima claro para planos melhores.",
+      login: "Entrar",
+      register: "Criar conta",
+      logout: "Sair",
+      email: "E-mail",
+      password: "Senha",
+      firstName: "Nome",
+      lastName: "Sobrenome",
+      phone: "Telefone",
+      welcome: "Bem-vindo de volta",
+      loginHint:
+        "Entre para consultar o clima e planejar seus horários ao ar livre.",
+      registerHint:
+        "Crie sua conta para começar a planejar de acordo com o clima.",
+      accountCreated: "Conta criada. Agora você pode entrar.",
+      city: "Cidade",
+      country: "País",
+      countryPlaceholder: "Selecione um país",
+      weather: "Consulta meteorológica",
+      weatherHint: "Confira as condições atuais de uma cidade.",
+      searchWeather: "Consultar clima",
+      analysis: "Análise de atividade",
+      analysisHint: "Encontre as melhores janelas de clima para sua atividade.",
+      analyze: "Analisar horários",
+      date: "Data",
+      period: "Período",
+      optional: "Opcional",
+      allPeriods: "Todos os períodos",
+      morning: "Manhã",
+      evening: "Tarde",
+      night: "Noite",
+      dawn: "Madrugada",
+      currentWeather: "Clima atual",
+      feelsLike: "Sensação térmica",
+      humidity: "Umidade",
+      wind: "Vento",
+      rain: "Chuva",
+      goodHours: "Bons horários",
+      currentHour: "Horário atual",
+      score: "Nota",
+      noHours: "Nenhum horário encontrado para esta seleção.",
+      loading: "Carregando…",
+      requestError:
+        "Não foi possível concluir sua solicitação. Tente novamente.",
+      language: "Idioma",
+      title: "Planeje de acordo com o clima",
+      subtitle:
+        "Use as condições atuais e as notas por hora para fazer melhores planos ao ar livre.",
+    },
+  },
+};
 
-i18n.use(initReactI18next).init({ resources, lng: localStorage.getItem('weather_language') ?? 'en', fallbackLng: 'en', interpolation: { escapeValue: false } })
-export default i18n
+i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: localStorage.getItem("weather_language") ?? "en",
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+  });
+export default i18n;
