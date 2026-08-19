@@ -1,4 +1,3 @@
-import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "react-i18next";
 
 import { countries } from "../../constants/countries";

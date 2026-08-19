@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CloudRainWind, CloudSun, Droplet, Gauge, LogOut, NotebookPen, Search, SunMoon, Thermometer, Wind } from "lucide-react";
+import { CloudSun, Gauge, LogOut, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { api, ApiError } from "../api";
