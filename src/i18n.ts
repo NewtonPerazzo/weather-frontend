@@ -50,6 +50,12 @@ const resources = {
       title: "Plan around the weather",
       subtitle:
         "Use current conditions and hourly scores to make better outdoor plans.",
+      now: "Now",
+      hour: "Hour",
+      info: "Infos",
+      temperature: "Temperature",
+      apparent_temperature: "Apparent Temperature",
+      byHour: "By Hour"
     },
   },
   pt: {
@@ -103,6 +109,12 @@ const resources = {
       title: "Planeje de acordo com o clima",
       subtitle:
         "Use as condições atuais e as notas por hora para fazer melhores planos ao ar livre.",
+      now: "Agora",
+      hour: "Hora",
+      info: "Infos",
+      temperature: "Temperatura",
+      apparent_temperature: "Sensação térmica",
+      byHour: "Por hora"
     },
   },
 };

@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CloudSun, Gauge, LogOut, Search } from "lucide-react";
+import { CloudRainWind, CloudSun, Droplet, Gauge, LogOut, NotebookPen, Search, SunMoon, Thermometer, Wind } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { api, ApiError } from "../api";
 import { analysisPeriods } from "../constants/analysis";
-import type { Forecast, HourlyAnalysis } from "../types";
+import type { HourlyAnalysis } from "../types";
 import { Button } from "../components/atoms/Button";
 import { FeedbackMessage } from "../components/atoms/FeedbackMessage";
 import { CountrySelect } from "../components/molecules/CountrySelect";
 import { LanguageSwitcher } from "../components/molecules/LanguageSwitcher";
+import cityMock from "../constants/mock";
+import InfoCard from "../components/molecules/InfoCard";
 
 type DashboardPageProps = { accessToken: string; onLogout: () => void };
-type WeatherFormValues = { city: string; countryCode: string };
 type AnalysisFormValues = {
   city: string;
   countryCode: string;
@@ -22,13 +23,10 @@ type AnalysisFormValues = {
 
 export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
   const { t } = useTranslation();
-  const [forecast, setForecast] = useState<Forecast | null>(null);
-  const [analysis, setAnalysis] = useState<HourlyAnalysis | null>(null);
+  const [analysis, setAnalysis] = useState<HourlyAnalysis | null>(cityMock);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState<"weather" | "analysis" | null>(null);
-  const weatherForm = useForm<WeatherFormValues>({
-    defaultValues: { city: "", countryCode: "BR" },
-  });
+
   const analysisForm = useForm<AnalysisFormValues>({
     defaultValues: { city: "", countryCode: "BR", day: "", period: "" },
   });
@@ -40,22 +38,7 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
     }
     setError(caught instanceof ApiError ? caught.message : t("requestError"));
   }
-  const searchWeather = weatherForm.handleSubmit(async (data) => {
-    setError("");
-    setLoading("weather");
-    try {
-      setForecast(
-        await api.forecast(accessToken, {
-          name: data.city,
-          country_code: data.countryCode,
-        }),
-      );
-    } catch (caught) {
-      handleError(caught);
-    } finally {
-      setLoading(null);
-    }
-  });
+
   const searchAnalysis = analysisForm.handleSubmit(async (data) => {
     setError("");
     setLoading("analysis");
@@ -104,46 +87,6 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
           <section className="panel">
             <div className="panel-heading">
               <div>
-                <p className="eyebrow">01</p>
-                <h2>{t("weather")}</h2>
-                <p>{t("weatherHint")}</p>
-              </div>
-              <CloudSun className="text-sky-700" />
-            </div>
-            <form
-              className="mt-6 grid gap-4 sm:grid-cols-2"
-              onSubmit={searchWeather}
-            >
-              <label className="field-label">
-                {t("city")}
-                <input
-                  className="input mt-1.5"
-                  {...weatherForm.register("city", { required: true })}
-                />
-              </label>
-              <CountrySelect
-                value={weatherForm.watch("countryCode")}
-                onChange={(value) => weatherForm.setValue("countryCode", value)}
-              />
-              <Button
-                className="sm:col-span-2"
-                disabled={loading !== null}
-                type="submit"
-              >
-                <Search size={17} />
-                {loading === "weather" ? t("loading") : t("searchWeather")}
-              </Button>
-            </form>
-            {forecast ? (
-              <pre className="result-card mt-6 overflow-auto text-xs">
-                {JSON.stringify(forecast, null, 2)}
-              </pre>
-            ) : null}
-          </section>
-          <section className="panel">
-            <div className="panel-heading">
-              <div>
-                <p className="eyebrow">02</p>
                 <h2>{t("analysis")}</h2>
                 <p>{t("analysisHint")}</p>
               </div>
@@ -198,12 +141,38 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
                 {loading === "analysis" ? t("loading") : t("analyze")}
               </Button>
             </form>
-            {analysis ? (
-              <pre className="result-card mt-6 overflow-auto text-xs">
-                {JSON.stringify(analysis, null, 2)}
-              </pre>
-            ) : null}
           </section>
+          <div>
+            {analysis && (
+              <section>
+                  <div>
+                    {analysis.current_hour && (
+                      <InfoCard
+                        hour={analysis.current_hour}
+                        title={t("currentWeather")}
+                      />
+                    )}
+                  </div>
+              </section>
+            )}
+            {analysis && (
+              <section>
+                  <div>
+                      <div>
+                        <p className="mt-2 text-slate-700 mb-2">{t('byHour')}</p>
+                        <div className="overflow-y-auto max-h-[250px]">
+                          {analysis.hours.map((hour) => (
+                            <InfoCard
+                              key={hour.hour}
+                              hour={hour}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                  </div>
+              </section>
+            )}
+          </div>
         </div>
       </div>
     </main>

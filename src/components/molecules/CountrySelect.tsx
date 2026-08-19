@@ -15,13 +15,6 @@ export function CountrySelect({ onChange, value }: CountrySelectProps) {
     <label className="field-label">
       {t("country")}
       <span className="relative mt-1.5 block">
-        {value ? (
-          <ReactCountryFlag
-            svg
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-5 -translate-y-1/2"
-            countryCode={value}
-          />
-        ) : null}
         <select
           className="input appearance-none"
           onChange={(event) => onChange(event.target.value)}
