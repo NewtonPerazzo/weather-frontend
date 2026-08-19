@@ -10,7 +10,6 @@ import { Button } from "../components/atoms/Button";
 import { FeedbackMessage } from "../components/atoms/FeedbackMessage";
 import { CountrySelect } from "../components/molecules/CountrySelect";
 import { LanguageSwitcher } from "../components/molecules/LanguageSwitcher";
-import cityMock from "../constants/mock";
 import InfoCard from "../components/molecules/InfoCard";
 
 type DashboardPageProps = { accessToken: string; onLogout: () => void };
