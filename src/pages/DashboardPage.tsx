@@ -23,7 +23,7 @@ type AnalysisFormValues = {
 
 export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
   const { t } = useTranslation();
-  const [analysis, setAnalysis] = useState<HourlyAnalysis | null>(cityMock);
+  const [analysis, setAnalysis] = useState<HourlyAnalysis | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState<"weather" | "analysis" | null>(null);
 
