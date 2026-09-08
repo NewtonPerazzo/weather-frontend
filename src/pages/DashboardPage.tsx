@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CloudSun, Gauge, LogOut, Search } from "lucide-react";
+import { CloudSun, Download, Gauge, LogOut, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { api, ApiError } from "../api";
@@ -20,11 +20,20 @@ type AnalysisFormValues = {
   period: string;
 };
 
+type AnalysisRequest = {
+  city: string;
+  countryCode: string;
+  day?: string;
+  period?: string;
+};
+
 export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
   const { t } = useTranslation();
   const [analysis, setAnalysis] = useState<HourlyAnalysis | null>(null);
+  const [analysisRequest, setAnalysisRequest] = useState<AnalysisRequest | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState<"weather" | "analysis" | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
 
   const analysisForm = useForm<AnalysisFormValues>({
     defaultValues: { city: "", countryCode: "BR", day: "", period: "" },
@@ -42,20 +51,59 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
     setError("");
     setLoading("analysis");
     try {
-      setAnalysis(
-        await api.analysis(accessToken, {
-          city: data.city,
-          country_code: data.countryCode,
-          ...(data.day ? { day: data.day } : {}),
-          ...(data.period ? { filter: data.period } : {}),
-        }),
-      );
+      const requestData = {
+        city: data.city,
+        countryCode: data.countryCode,
+        ...(data.day ? { day: data.day } : {}),
+        ...(data.period ? { period: data.period } : {}),
+      };
+      const response = await api.analysis(accessToken, {
+        city: requestData.city,
+        country_code: requestData.countryCode,
+        ...(requestData.day ? { day: requestData.day } : {}),
+        ...(requestData.period ? { filter: requestData.period } : {}),
+      });
+      setAnalysis(response);
+      setAnalysisRequest(requestData);
     } catch (caught) {
       handleError(caught);
     } finally {
       setLoading(null);
     }
   });
+
+  async function downloadReport() {
+    if (!analysisRequest) return;
+
+    const forecastDays = analysisRequest.day ? 16 : 1;
+    const cityKey = `${analysisRequest.city.toLowerCase().trim().replaceAll(" ", "_")}_${analysisRequest.countryCode.toLowerCase()}_${forecastDays}1`;
+    setError("");
+    setReportLoading(true);
+    try {
+      const task = await api.createReport(accessToken, cityKey, {
+        ...(analysisRequest.day ? { day: analysisRequest.day } : {}),
+        ...(analysisRequest.period ? { filter: analysisRequest.period } : {}),
+      });
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        await new Promise((resolve) => window.setTimeout(resolve, 1000));
+        const result = await api.getReport(accessToken, task.task_id);
+        if ("blob" in result && result.blob) {
+          const url = URL.createObjectURL(result.blob);
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "weather-report.pdf";
+          anchor.click();
+          URL.revokeObjectURL(url);
+          return;
+        }
+      }
+      setError("The report is still being generated. Please try again shortly.");
+    } catch (caught) {
+      handleError(caught);
+    } finally {
+      setReportLoading(false);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -153,6 +201,12 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
                     )}
                   </div>
               </section>
+            )}
+            {analysis && (
+              <Button className="mt-4" disabled={reportLoading} onClick={downloadReport}>
+                <Download size={17} />
+                {reportLoading ? "Generating report..." : "Download PDF report"}
+              </Button>
             )}
             {analysis && (
               <section>

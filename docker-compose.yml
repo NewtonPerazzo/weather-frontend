@@ -2,5 +2,7 @@ services:
   weather-frontend:
     build:
       context: .
+      args:
+        VITE_GATEWAY_URL: ${VITE_GATEWAY_URL}
     ports:
       - "8080:80"

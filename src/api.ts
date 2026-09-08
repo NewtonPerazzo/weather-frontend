@@ -82,4 +82,32 @@ export const api = {
       token,
     );
   },
+  createReport: (
+    token: string,
+    cityKey: string,
+    filters: { day?: string; filter?: string },
+  ) => {
+    const params = new URLSearchParams({ city_key: cityKey });
+    if (filters.day) params.set("day", filters.day);
+    if (filters.filter) params.set("filter", filters.filter);
+    return request<{ task_id: string; status: string }>(
+      `/gateway/reports?${params}`,
+      { method: "POST" },
+      token,
+    );
+  },
+  getReport: async (token: string, taskId: string) => {
+    const response = await fetch(
+      `${baseUrl}/gateway/reports?task_id=${encodeURIComponent(taskId)}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new ApiError(data?.detail ?? "Request failed", response.status);
+    }
+    if (response.headers.get("content-type")?.startsWith("application/pdf")) {
+      return { blob: await response.blob(), filename: response.headers.get("content-disposition") };
+    }
+    return { status: (await response.json()).status as string };
+  },
 };
