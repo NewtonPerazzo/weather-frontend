@@ -80,10 +80,15 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
     setError("");
     setReportLoading(true);
     try {
-      const task = await api.createReport(accessToken, cityKey, {
-        ...(analysisRequest.day ? { day: analysisRequest.day } : {}),
-        ...(analysisRequest.period ? { filter: analysisRequest.period } : {}),
-      });
+      const task = await api.createReport(
+        accessToken,
+        cityKey,
+        analysisRequest.city,
+        {
+          ...(analysisRequest.day ? { day: analysisRequest.day } : {}),
+          ...(analysisRequest.period ? { filter: analysisRequest.period } : {}),
+        },
+      );
       for (let attempt = 0; attempt < 20; attempt += 1) {
         await new Promise((resolve) => window.setTimeout(resolve, 1000));
         const result = await api.getReport(accessToken, task.task_id);
@@ -91,7 +96,7 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
           const url = URL.createObjectURL(result.blob);
           const anchor = document.createElement("a");
           anchor.href = url;
-          anchor.download = "weather-report.pdf";
+          anchor.download = "weather-report.xlsx";
           anchor.click();
           URL.revokeObjectURL(url);
           return;
@@ -205,7 +210,7 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
             {analysis && (
               <Button className="mt-4" disabled={reportLoading} onClick={downloadReport}>
                 <Download size={17} />
-                {reportLoading ? "Generating report..." : "Download PDF report"}
+                {reportLoading ? "Generating report..." : "Download Excel report"}
               </Button>
             )}
             {analysis && (
