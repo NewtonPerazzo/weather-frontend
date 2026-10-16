@@ -3,10 +3,11 @@ import { Controller, useForm } from "react-hook-form";
 import { CloudSun, Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { api, ApiError } from "../../api";
+import { api } from "../../api";
 import { countries } from "../../constants/countries";
 import type { AuthTokens } from "../../types";
 import { formatPhone } from "../../utils/phone";
+import { getUserFriendlyError } from "../../utils/api-error";
 import { Button } from "../atoms/Button";
 import { FeedbackMessage } from "../atoms/FeedbackMessage";
 import { FormField } from "../molecules/FormField";
@@ -76,7 +77,7 @@ export function AuthForm({ onLogin }: AuthFormProps) {
       }
     } catch (error) {
       setRequestError(
-        error instanceof ApiError ? error.message : t("requestError"),
+        getUserFriendlyError(error, t),
       );
     } finally {
       setIsLoading(false);
@@ -122,14 +123,14 @@ export function AuthForm({ onLogin }: AuthFormProps) {
                 error={errors.firstName?.message}
                 label={t("firstName")}
                 {...register("firstName", {
-                  required: "First name is required.",
+                  required: t("firstNameRequired"),
                 })}
               />
               <FormField
                 error={errors.lastName?.message}
                 label={t("lastName")}
                 {...register("lastName", {
-                  required: "Last name is required.",
+                  required: t("lastNameRequired"),
                 })}
               />
             </div>
@@ -140,10 +141,10 @@ export function AuthForm({ onLogin }: AuthFormProps) {
             label={t("email")}
             type="email"
             {...register("email", {
-              required: "Email is required.",
+              required: t("emailRequired"),
               pattern: {
                 value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Enter a valid email address.",
+                message: t("emailInvalid"),
               },
             })}
           />
@@ -166,10 +167,10 @@ export function AuthForm({ onLogin }: AuthFormProps) {
                   control={control}
                   name="phone"
                   rules={{
-                    required: "Phone number is required.",
+                    required: t("phoneRequired"),
                     validate: (value) =>
                       value.replace(/\D/g, "").length >= 6 ||
-                      "Enter a valid phone number.",
+                      t("phoneInvalid"),
                   }}
                   render={({ field }) => (
                     <input
@@ -201,10 +202,10 @@ export function AuthForm({ onLogin }: AuthFormProps) {
             error={errors.password?.message}
             label={t("password")}
             registration={register("password", {
-              required: "Password is required.",
+              required: t("passwordRequired"),
               minLength: {
                 value: 3,
-                message: "Password must have at least 3 characters.",
+                message: t("passwordTooShort"),
               },
             })}
           />

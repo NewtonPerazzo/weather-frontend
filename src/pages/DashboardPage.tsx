@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CloudSun, Download, Gauge, LogOut, Search } from "lucide-react";
+import { CloudSun, Download, Gauge, LogOut, Search, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { api, ApiError } from "../api";
@@ -11,6 +11,8 @@ import { FeedbackMessage } from "../components/atoms/FeedbackMessage";
 import { CountrySelect } from "../components/molecules/CountrySelect";
 import { LanguageSwitcher } from "../components/molecules/LanguageSwitcher";
 import InfoCard from "../components/molecules/InfoCard";
+import { PaginatedCarousel } from "../components/molecules/PaginatedCarousel";
+import { getUserFriendlyError } from "../utils/api-error";
 
 type DashboardPageProps = { accessToken: string; onLogout: () => void };
 type AnalysisFormValues = {
@@ -44,7 +46,7 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
       onLogout();
       return;
     }
-    setError(caught instanceof ApiError ? caught.message : t("requestError"));
+    setError(getUserFriendlyError(caught, t));
   }
 
   const searchAnalysis = analysisForm.handleSubmit(async (data) => {
@@ -101,8 +103,11 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
           URL.revokeObjectURL(url);
           return;
         }
+        if (result.status === "failed") {
+          throw new ApiError("report_generation_failed", 500);
+        }
       }
-      setError("The report is still being generated. Please try again shortly.");
+      setError(t("reportStillGenerating"));
     } catch (caught) {
       handleError(caught);
     } finally {
@@ -113,12 +118,12 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:flex-nowrap sm:gap-4 sm:px-6">
           <div className="flex items-center gap-2 text-sky-700">
             <CloudSun size={28} />
             <span className="text-lg font-black">{t("app")}</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="ml-auto flex items-end gap-2 sm:items-center sm:gap-4">
             <LanguageSwitcher />
             <Button variant="secondary" onClick={onLogout}>
               <LogOut size={16} /> {t("logout")}
@@ -136,7 +141,7 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
         </section>
         {error ? <FeedbackMessage type="error">{error}</FeedbackMessage> : null}
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <section className="panel">
+          <section className="panel self-start">
             <div className="panel-heading">
               <div>
                 <h2>{t("analysis")}</h2>
@@ -161,14 +166,28 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
                   analysisForm.setValue("countryCode", value)
                 }
               />
-              <label className="field-label">
-                {t("date")}
-                <input
-                  className="input mt-1.5"
-                  type="date"
-                  {...analysisForm.register("day")}
-                />
-              </label>
+              <div className="field-label">
+                <label htmlFor="analysis-date">{t("date")}</label>
+                <div className="relative mt-1.5">
+                  <input
+                    className="input"
+                    id="analysis-date"
+                    type="date"
+                    {...analysisForm.register("day")}
+                  />
+                  {analysisForm.watch("day") ? (
+                    <button
+                      aria-label={t("clearDate")}
+                      className="absolute right-9 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+                      onClick={() => analysisForm.setValue("day", "")}
+                      title={t("clearDate")}
+                      type="button"
+                    >
+                      <X size={16} />
+                    </button>
+                  ) : null}
+                </div>
+              </div>
               <label className="field-label">
                 {t("period")}
                 <select
@@ -210,24 +229,19 @@ export function DashboardPage({ accessToken, onLogout }: DashboardPageProps) {
             {analysis && (
               <Button className="mt-4" disabled={reportLoading} onClick={downloadReport}>
                 <Download size={17} />
-                {reportLoading ? "Generating report..." : "Download Excel report"}
+                {reportLoading ? t("generatingReport") : t("downloadExcelReport")}
               </Button>
             )}
             {analysis && (
               <section>
-                  <div>
-                      <div>
-                        <p className="mt-2 text-slate-700 mb-2">{t('byHour')}</p>
-                        <div className="overflow-y-auto max-h-[250px]">
-                          {analysis.hours.map((hour) => (
-                            <InfoCard
-                              key={hour.hour}
-                              hour={hour}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                  </div>
+                <PaginatedCarousel
+                  ariaLabel={t("byHour")}
+                  getItemKey={(hour) => hour.hour}
+                  items={analysis.hours}
+                  nextLabel={t("nextHour")}
+                  previousLabel={t("previousHour")}
+                  renderItem={(hour) => <InfoCard hour={hour} />}
+                />
               </section>
             )}
           </div>

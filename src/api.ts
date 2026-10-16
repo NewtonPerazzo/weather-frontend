@@ -4,12 +4,27 @@ const baseUrl = (
   import.meta.env.VITE_GATEWAY_URL ?? "https://weather-gateway.onrender.com"
 ).replace(/\/$/, "");
 export class ApiError extends Error {
+  public readonly code: string;
   public readonly status: number;
 
-  constructor(message: string, status: number) {
-    super(message);
+  constructor(code: string, status: number) {
+    super(code);
+    this.code = code;
     this.status = status;
   }
+}
+
+function getErrorCode(data: unknown, status: number): string {
+  if (
+    data
+    && typeof data === "object"
+    && "error" in data
+    && typeof data.error === "string"
+  ) {
+    return data.error;
+  }
+
+  return `http_${status}`;
 }
 
 async function request<T>(
@@ -27,10 +42,7 @@ async function request<T>(
   });
   if (!response.ok) {
     const data = await response.json().catch(() => null);
-    throw new ApiError(
-      data?.detail ?? data?.message ?? "Request failed",
-      response.status,
-    );
+    throw new ApiError(getErrorCode(data, response.status), response.status);
   }
   return response.status === 204
     ? (undefined as T)
@@ -107,7 +119,7 @@ export const api = {
     );
     if (!response.ok) {
       const data = await response.json().catch(() => null);
-      throw new ApiError(data?.detail ?? "Request failed", response.status);
+      throw new ApiError(getErrorCode(data, response.status), response.status);
     }
     if (
       response.headers

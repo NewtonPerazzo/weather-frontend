@@ -6,6 +6,7 @@ import {
   CloudRainWind,
   Wind,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import type { CityHourAnalysisData } from "../../constants/types"
 
 interface InfoCardProps {
@@ -14,8 +15,10 @@ interface InfoCardProps {
 }
 
 const InfoCard = ({ hour, title }: InfoCardProps) => {
+  const { t } = useTranslation()
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 w-[450px]">
+    <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6">
 
       {title && (
         <p className="text-lg font-semibold mb-5">
@@ -28,14 +31,14 @@ const InfoCard = ({ hour, title }: InfoCardProps) => {
         <div className="flex items-center gap-2">
           <NotebookPen size={18} />
 
-          <p className="text-xl font-semibold">
-            {hour.hour}
+          <p className="text-lg font-semibold leading-tight sm:text-xl">
+            {title ? hour.hour : t("dataForHour", { hour: hour.hour })}
           </p>
         </div>
 
-        <div className="flex flex-col items-end">
-            <div className="flex items-center gap-2">
-                <span className="text-slate-600">
+        <div className="flex w-24 shrink-0 flex-col items-end text-right min-[501px]:w-32">
+            <div className="flex w-full items-center justify-end gap-2">
+                <span className="text-sm text-slate-600 sm:text-base">
                     Score
                 </span>
 
@@ -43,7 +46,7 @@ const InfoCard = ({ hour, title }: InfoCardProps) => {
                     {hour.score}
                 </span>
             </div>
-            {hour.reason && <span className="font-semibold text-xs text-slate-600">
+            {hour.reason && <span className="mt-0.5 block w-full text-right text-[10px] font-semibold leading-tight text-slate-600 sm:text-xs">
                 {hour.reason}
             </span>}
         </div>
